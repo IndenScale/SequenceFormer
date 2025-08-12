@@ -1,0 +1,5 @@
+pydantic
+openai
+json5
+fuzzywuzzy
+python-dotenv

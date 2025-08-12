@@ -1,0 +1,23 @@
+{
+  "type": [
+    "Title",
+    "Abstract",
+    "Introduction",
+    "Related Work",
+    "Methodology",
+    "Experiment Design",
+    "Results",
+    "Conclusion",
+    "References",
+    "Acknowledgements",
+    "Appendix"
+  ],
+  "form": [
+    "text",
+    "list",
+    "figure",
+    "table",
+    "formula",
+    "code"
+  ]
+}
