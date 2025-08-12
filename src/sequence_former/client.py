@@ -1,4 +1,3 @@
-# src/client.py
 import json
 import logging
 import os
@@ -11,9 +10,9 @@ from .llm_processor import process_page_with_llm
 from .postprocessor import finalize_chunks_and_update_state, populate_chunk_text, enrich_chunks_with_vlm
 from .config import Settings
 
-class TextFormerClient:
+class SequenceFormerClient:
     """
-    A client for the TextFormer intelligent document processing pipeline.
+    A client for the SequenceFormer intelligent document processing pipeline.
     """
     def __init__(self, settings: Settings):
         self.settings = settings

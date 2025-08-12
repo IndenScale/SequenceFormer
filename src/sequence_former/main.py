@@ -1,15 +1,14 @@
-# src/main.py
 import argparse
 import logging
 import sys
 
-from .client import TextFormerClient
+from .client import SequenceFormerClient
 from .config import load_settings
 
 def setup_logging(debug: bool):
     """Configures the logging for the application."""
     level = logging.DEBUG if debug else logging.INFO
-    log_file = "debug.log" if debug else "textformer.log" # Updated log file name
+    log_file = "debug.log" if debug else "sequence_former.log" # Updated log file name
 
     logging.basicConfig(
         level=level,
@@ -32,7 +31,7 @@ def setup_logging(debug: bool):
     logging.info(f"Logging initialized. Level: {logging.getLevelName(level)}. Log file: {log_file}")
 
 def main():
-    parser = argparse.ArgumentParser(description="TextFormer: An intelligent, multi-modal document structuring engine.", add_help=False)
+    parser = argparse.ArgumentParser(description="SequenceFormer: An intelligent, multi-modal document structuring engine.", add_help=False)
 
     # --- Argument Groups ---
     required_args = parser.add_argument_group('Required arguments')
@@ -68,7 +67,7 @@ def main():
     setup_logging(settings.debug)
 
     try:
-        client = TextFormerClient(settings)
+        client = SequenceFormerClient(settings)
         client.process_file(settings.input_path, settings.output)
     except Exception as e:
         logging.error(f"A critical error occurred: {e}")

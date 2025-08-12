@@ -1,4 +1,3 @@
-# src/config.py
 import os
 import json
 from pydantic import BaseModel, Field
@@ -51,7 +50,7 @@ def load_settings(args: Optional[dict] = None) -> Settings:
     env_settings = {k: v for k, v in env_settings.items() if v is not None}
     
     # 2. Load from global config file
-    global_config_path = os.path.expanduser("~/.agentic_text_splitter/settings.json")
+    global_config_path = os.path.expanduser("~/.sequence_former/settings.json")
     global_settings = {}
     if os.path.exists(global_config_path):
         with open(global_config_path, 'r') as f:
@@ -81,7 +80,7 @@ def load_settings(args: Optional[dict] = None) -> Settings:
 
 def ensure_global_config_dir_exists():
     """Ensures the global config directory exists."""
-    dir_path = os.path.expanduser("~/.textformer")
+    dir_path = os.path.expanduser("~/.sequence_former")
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)
         print(f"Created global settings directory at: {dir_path}")

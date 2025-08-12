@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "textformer"
+name = "sequence-former"
 version = "0.1.0"
 authors = [
   { name="IndenScale", email="hfu7565ytru@gmail.com" },
@@ -25,11 +25,11 @@ dependencies = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/IndenScale/textformer"
-"Bug Tracker" = "https://github.com/IndenScale/textformer/issues"
+"Homepage" = "https://github.com/IndenScale/SequenceFormer"
+"Bug Tracker" = "https://github.com/IndenScale/SequenceFormer/issues"
 
 [project.scripts]
-textformer = "textformer.main:main"
+sequence-former = "sequence_former.main:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

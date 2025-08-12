@@ -1,21 +1,21 @@
-# TextFormer: 设计理念与最终架构
+# SequenceFormer: 设计理念与最终架构
 
-本文档阐述了 `TextFormer` 的核心设计理念、最终实现架构以及关键工作流程，旨在为使用者和二次开发者提供一份准确、清晰的“地图”。
+本文档阐述了 `SequenceFormer` 的核心设计理念、最终实现架构以及关键工作流程，旨在为使用者和二次开发者提供一份准确、清晰的“地图”。
 
 ## 1. 核心理念：从“分割器”到“结构化引擎”
 
-`TextFormer` 的诞生源于一个核心洞察：在构建高级RAG系统的过程中，文档处理的瓶颈不仅在于“分割”（Splitting），更在于**“理解与结构化” (Understanding & Structuring)**。
+`SequenceFormer` 的诞生源于一个核心洞察：在构建高级RAG系统的过程中，文档处理的瓶颈不仅在于“分割”（Splitting），更在于**“理解与结构化” (Understanding & Structuring)**。
 
-因此，`TextFormer` 的最终使命是：**利用大型语言模型（LLM）和视觉语言模型（VLM），将非结构化或半结构化的多模态文档，转化为一个由大小合理、语义连贯、元数据丰富的“原子块”（Atom Chunks）组成的、可直接用于下游任务的结构化数据流。**
+因此，`SequenceFormer` 的最终使命是：**利用大型语言模型（LLM）和视觉语言模型（VLM），将非结构化或半结构化的多模态文档，转化为一个由大小合理、语义连贯、元数据丰富的“原子块”（Atom Chunks）组成的、可直接用于下游任务的结构化数据流。**
 
 它是一个**结构化**和**富化**的引擎，而非一个简单的分割器。
 
 ## 2. 架构原则：关注点分离
 
-在开发过程中，我们确立了`TextFormer`最重要的架构原则：**关注点分离**。我们将复杂的文档处理任务，解耦为了两个独立的阶段：
+在开发过程中，我们确立了`SequenceFormer`最重要的架构原则：**关注点分离**。我们将复杂的文档处理任务，解耦为了两个独立的阶段：
 
-1.  **文档结构化 (由 `TextFormer` 完成)**: 本项目的核心职责。它专注于理解文档的**结构与形式**（章节、列表、代码、图片等），并将其可靠地分解为`Atom Chunks`，同时为每个块标注其**结构性元数据**（例如，`{"type": "Conclusion", "form": "list"}`）。
-2.  **领域知识提取 (未来独立的下游任务)**: 这是一个更高级的流程，它消费`TextFormer`的输出，并利用更丰富的全局上下文来进行深度的、**内容驱动的**领域知识提取（例如，提取所有被提及的技术、项目代号或关键观点）。
+1.  **文档结构化 (由 `SequenceFormer` 完成)**: 本项目的核心职责。它专注于理解文档的**结构与形式**（章节、列表、代码、图片等），并将其可靠地分解为`Atom Chunks`，同时为每个块标注其**结构性元数据**（例如，`{"type": "Conclusion", "form": "list"}`）。
+2.  **领域知识提取 (未来独立的下游任务)**: 这是一个更高级的流程，它消费`SequenceFormer`的输出，并利用更丰富的全局上下文来进行深度的、**内容驱动的**领域知识提取（例如，提取所有被提及的技术、项目代号或关键观点）。
 
 这个原则极大地降低了单次LLM调用的认知负荷，是系统稳定性和可靠性的基石。
 
@@ -51,7 +51,7 @@ class ProcessingState(BaseModel):
 
 ## 4. 最终工作流：流式处理引擎
 
-`TextFormer` 的最终工作流是一个**状态化的、流式的处理引擎**，确保了在处理长文档时的高度鲁棒性和内存效率。
+`SequenceFormer` 的最终工作流是一个**状态化的、流式的处理引擎**，确保了在处理长文档时的高度鲁棒性和内存效率。
 
 ### 4.1 整体流程图
 
@@ -82,7 +82,7 @@ flowchart TD
 ```mermaid
 sequenceDiagram
     participant User
-    participant TextFormerClient as Client
+    participant SequenceFormerClient as Client
     participant Preprocessor as PreP
     participant LLMProcessor as LLM_P
     participant PostProcessor as PostP
