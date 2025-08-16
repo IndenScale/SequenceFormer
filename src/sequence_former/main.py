@@ -52,6 +52,8 @@ def main():
     proc_args.add_argument("--long_doc_chunk_size", type=int, help="Character size for pre-splitting long docs.")
     proc_args.add_argument("--target_chunk_size", type=int, help="Ideal character size for final chunks.")
     proc_args.add_argument("--chunk_size_tolerance", type=float, help="Tolerance for chunk size deviation.")
+    proc_args.add_argument("--min_chunk_size", type=int, help="The minimum character size for a chunk. Chunks smaller than this will be merged with adjacent chunks under the same heading.")
+    proc_args.add_argument("--mineru", action="store_true", help="Enable MinerU layout-aware processing for directory inputs.")
     proc_args.add_argument("--metadata-schema", type=str, dest="metadata_schema_path", help="Path to the JSON file for the metadata schema.")
 
     output_args.add_argument("-o", "--output", type=str, help="Path for the output JSONL file. Use '-' for stdout.")

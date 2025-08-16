@@ -24,7 +24,11 @@ class SequenceFormerClient:
         self.settings.input_path = input_path # Ensure input_path is set for VLM
 
         logging.info(f"Starting processing for: {input_path}")
-        enriched_document = load_and_enrich_document(input_path, self.settings.long_doc_chunk_size)
+        enriched_document = load_and_enrich_document(
+            input_path, 
+            self.settings.long_doc_chunk_size,
+            self.settings.mineru
+        )
 
         doc_id = os.path.basename(input_path)
         initial_heading = f"# {doc_id}"

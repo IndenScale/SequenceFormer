@@ -29,7 +29,14 @@ Each chunk you create should ideally be around {settings.target_chunk_size} char
 Your entire response must be only the JSON.
 The JSON object must have two keys: "hierarchical_headings" and "chunks".
 - "hierarchical_headings" must be a list of strings representing the document's titles and subtitles.
-- "chunks" must be a list of objects, where each object has keys like "start_page", "start_line", "end_page", "end_line", "summary", and "metadata".
+- "chunks" must be a list of objects, where each object has keys like "start_page", "start_line", "end_page", "end_line", "summary", "heading", and "metadata".
+
+**HEADING EXTRACTION RULES:**
+- Each chunk MUST have a "heading" field that indicates which hierarchical heading this chunk belongs to.
+- The "heading" should be the most specific (deepest) heading that applies to this chunk's content.
+- If a chunk falls under multiple headings (e.g., section 2.1.3 falls under "2" and "2.1"), use the most specific one ("2.1.3").
+- If no explicit heading applies to a chunk, use the last heading that appeared before this chunk's content.
+- The heading must be a string from the "hierarchical_headings" list.
 """
     metadata_schema_instruction = ""
     if state.metadata_schema:

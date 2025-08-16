@@ -32,9 +32,12 @@ ENV/
 env.bak
 venv.bak
 
-# Log files
-*.log
-logs/
+# Test and debug outputs
+debug.log
+sequence_former.log
+mineru_test_output.jsonl
+*.jsonl
+
 
 # IDE / Editor specific
 .vscode/

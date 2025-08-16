@@ -43,6 +43,64 @@ def populate_chunk_text(chunk: Chunk, all_lines_map: Dict[str, str]) -> None:
     """A utility function to reconstruct and populate the raw_text field of a chunk."""
     chunk.raw_text = _reconstruct_chunk_text(chunk, all_lines_map)
 
+def _associate_chunk_with_heading(chunk: Chunk, hierarchical_headings: List[str]) -> None:
+    """
+    为chunk自动关联最合适的heading。
+    
+    规则：
+    1. 如果chunk已经有heading（由LLM返回），则保持不变
+    2. 如果chunk没有heading，则关联到最后一个有效的heading
+    3. 如果没有可用的heading，则保持为None
+    """
+    if chunk.heading is not None and chunk.heading.strip():
+        # LLM已经返回了heading，保持不变
+        return
+    
+    if hierarchical_headings:
+        # 自动关联到最后一个heading
+        chunk.heading = hierarchical_headings[-1]
+    else:
+        # 没有可用的heading，保持为None
+        chunk.heading = None
+
+def _merge_small_chunks(chunks: List[Chunk], settings: Settings) -> List[Chunk]:
+    """Merges chunks that are smaller than the minimum size with adjacent chunks under the same heading."""
+    if not chunks or settings.min_chunk_size <= 0:
+        return chunks
+
+    i = 0
+    while i < len(chunks):
+        chunk = chunks[i]
+        
+        if chunk.raw_text and len(chunk.raw_text) < settings.min_chunk_size:
+            # Prioritize merging with the previous chunk
+            if i > 0:
+                prev_chunk = chunks[i-1]
+                if prev_chunk.heading == chunk.heading:
+                    logging.debug(f"Merging small chunk (p{chunk.start_page}:l{chunk.start_line}) into previous chunk (p{prev_chunk.start_page}:l{prev_chunk.start_line}).")
+                    prev_chunk.raw_text += "\n" + chunk.raw_text
+                    prev_chunk.end_page = chunk.end_page
+                    prev_chunk.end_line = chunk.end_line
+                    prev_chunk.summary += " " + chunk.summary
+                    chunks.pop(i)
+                    continue
+            
+            # If not merged, try merging with the next chunk
+            if i + 1 < len(chunks):
+                next_chunk = chunks[i+1]
+                if next_chunk.heading == chunk.heading:
+                    logging.debug(f"Merging small chunk (p{chunk.start_page}:l{chunk.start_line}) into next chunk (p{next_chunk.start_page}:l{next_chunk.start_line}).")
+                    next_chunk.raw_text = chunk.raw_text + "\n" + next_chunk.raw_text
+                    next_chunk.start_page = chunk.start_page
+                    next_chunk.start_line = chunk.start_line
+                    next_chunk.summary = chunk.summary + " " + next_chunk.summary
+                    chunks.pop(i)
+                    continue
+
+        i += 1
+        
+    return chunks
+
 def finalize_chunks_and_update_state(
     llm_output: LLMOutput,
     combined_enriched_lines: List[Dict[str, Any]],
@@ -52,10 +110,19 @@ def finalize_chunks_and_update_state(
 ) -> Tuple[List[Chunk], ProcessingState]:
     """Processes the LLM output to finalize reliable chunks and update the state."""
     all_lines_map = {_get_line_identifier(line): line['text'] for line in combined_enriched_lines}
+    
+    # 1. Populate raw_text and associate headings for all chunks from the LLM output first.
+    for chunk in llm_output.chunks:
+        populate_chunk_text(chunk, all_lines_map)
+        _associate_chunk_with_heading(chunk, llm_output.hierarchical_headings)
+
+    # 2. Merge small chunks if the setting is enabled.
+    processed_chunks = _merge_small_chunks(llm_output.chunks, settings)
+
     processed_line_ids = set(current_state.processed_lines)
 
     consumed_line_ids = set()
-    for chunk in llm_output.chunks:
+    for chunk in processed_chunks:
         for page_num in range(chunk.start_page, chunk.end_page + 1):
             start_line = chunk.start_line if page_num == chunk.start_page else 1
             end_line = chunk.end_line if page_num == chunk.end_page else 9999
@@ -72,12 +139,11 @@ def finalize_chunks_and_update_state(
     reliable_chunks: List[Chunk] = []
     new_staged_chunk: Optional[Chunk] = None
     
-    if llm_output.chunks:
-        new_staged_chunk = llm_output.chunks[-1]
-        reliable_chunks = llm_output.chunks[:-1]
+    if processed_chunks:
+        new_staged_chunk = processed_chunks[-1]
+        reliable_chunks = processed_chunks[:-1]
 
     for chunk in reliable_chunks:
-        populate_chunk_text(chunk, all_lines_map)
         _validate_chunk_size(chunk, settings)
         _validate_metadata(chunk, settings)
         for page_num in range(chunk.start_page, chunk.end_page + 1):

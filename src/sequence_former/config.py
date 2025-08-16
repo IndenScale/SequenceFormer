@@ -22,6 +22,7 @@ class Settings(BaseModel):
     long_doc_chunk_size: int = Field(8000, description="The character size for pre-splitting long documents")
     target_chunk_size: int = Field(1024, description="The ideal target character size for LLM-generated chunks.")
     chunk_size_tolerance: float = Field(0.1, description="Tolerance for chunk size deviation (e.g., 0.1 for 10% tolerance).")
+    min_chunk_size: int = Field(256, description="The minimum character size for a chunk. Chunks smaller than this will be merged.")
     
     # --- Metadata Management ---
     metadata_schema_path: Optional[str] = Field(None, description="Path to a JSON file containing the metadata extraction schema.")
@@ -32,6 +33,7 @@ class Settings(BaseModel):
     debug: bool = Field(False, description="Enable debug logging (from CLI)")
     retain_intermediate: bool = Field(False, description="Retain intermediate files for debugging.")
     enable_vlm: bool = Field(False, description="Enable VLM processing for embedded images.")
+    mineru: bool = Field(False, description="Enable MinerU layout-aware processing.")
 
 def load_settings(args: Optional[dict] = None) -> Settings:
     """

@@ -18,6 +18,8 @@ This tool is designed to be the robust, foundational layer of any advanced RAG (
 -   **Atomic Content Protection**: Guarantees that fenced content blocks (like code, diagrams, or tables) are never split, preserving their integrity.
 -   **Multi-Modal VLM Integration**: Can analyze embedded images, generate descriptions, and reconstruct the content to include both text and image analysis in a structured format.
 -   **Customizable Metadata Extraction**: Use a simple JSON schema to instruct the LLM to classify and tag each chunk according to your specific needs (e.g., by document type, form, or any other category).
+-   **Layout-Aware Processing with `minerU`**: Natively supports the output format of `minerU`, allowing it to process complex documents (like PDFs) with an understanding of their original layout, including text blocks and images.
+-   **Small Chunk Merging**: Automatically merges chunks that are too small with adjacent chunks under the same heading, ensuring that all final chunks meet a minimum size threshold for better semantic coherence.
 -   **Streaming Output**: Produces a JSONL stream of `Atom Chunks`, ideal for immediate ingestion into downstream systems like vector databases.
 -   **Robust & Configurable**: Highly configurable through CLI arguments, `.env` files, and a global config.
 
@@ -60,6 +62,14 @@ This command uses a custom schema to classify chunks based on project-specific c
 
 ```bash
 sequence-former "path/to/my_document.md" --metadata-schema "path/to/my_schema.json"
+```
+
+**Example: Merging Small Chunks**
+
+This command processes a document and ensures that any chunk smaller than 256 characters is merged with an adjacent chunk under the same heading.
+
+```bash
+sequence-former "path/to/my_document.md" --min_chunk_size 256
 ```
 
 ### Python Library
